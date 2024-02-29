@@ -53,7 +53,9 @@ export default {
       "red": "#ff0f0f",
       "todo": "#b83f45",
       "background": "#f5f5f5",
-      "focusInput": "#cf7d7d"
+      "focusInput": "#cf7d7d",
+      "borderColor": "#ce4646",
+      "light-gray": "#949494"
     },
   },
 
