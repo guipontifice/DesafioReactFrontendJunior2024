@@ -6,12 +6,20 @@ import CardSettings from "./CardSettings";
 function input() {
     const [inputValue, setInputValue] = React.useState('' as string);
     const [task, setTask] = React.useState([] as string[]);
+    const [filter, setFilter] = useState<'all' | 'active' | 'completed'>('all');
+    const [completedTasks, setCompletedTasks] = useState<Record<string, boolean>>({});
 
     React.useEffect(() => {
         console.log('Task:', task);
     }, [task]);
+
+    const clearTasks = () => {
+        console.log('check')
+        setTask([]);
+    }
     const createTask = (e: React.FormEvent) => {
         e.preventDefault()
+        if (!inputValue) return;
         console.log(inputValue)
         setTask([...task, inputValue])
         console.log('Task:', task)
@@ -22,6 +30,7 @@ function input() {
     };
     interface TaskListProps {
         tasks: string[];
+        setTasks: (tasks: string[]) => void;
     }
     return (
         <>
@@ -44,13 +53,17 @@ function input() {
                 <div className="md:w-full shadow-md">
                     {
                         task && task.length > 0 ?
-                            <TaskList tasks={task} /> :
+                            <TaskList tasks={task} setTasks={setTask} filter={filter} /> :
                             ''
                     }
                 </div>
-            <div className="bg-white w-full">
-                <CardSettings />
-            </div>
+                <div className="bg-white w-full">
+                    {
+                        task && task.length > 0 ?
+                            <CardSettings filter={filter} setFilter={setFilter} completedTasks={completedTasks} clearTasks={clearTasks} />
+                            : ''
+                    }
+                </div>
             </div>
             <footer className="flex flex-col items-center text-gray text-xs">
                 <p className="mt-20">Double-click to edit a todo</p>
