@@ -1,20 +1,29 @@
-import { count } from 'console';
-import React from 'react'
+import React, { useEffect } from 'react'
 import { useState } from 'react';
+import CardSettings from './CardSettings';
+
 interface TaskListProps {
     tasks: string[];
     setTasks: (tasks: string[]) => void;
     filter: 'all' | 'active' | 'completed';
+    setFilter: (filter: 'all' | 'active' | 'completed') => void;
     completedTasks: Record<string, boolean>;
     setCompletedTasks: React.Dispatch<React.SetStateAction<Record<string, boolean>>>;
 }
-const TaskList: React.FC<TaskListProps> = ({ tasks, setTasks, filter, completedTasks, setCompletedTasks }) => {
+
+const TaskList: React.FC<TaskListProps> = ({ tasks, setTasks, filter, setFilter, completedTasks, setCompletedTasks }) => {
     const [isChecked, setIsChecked] = useState<Record<string, boolean>>({});
     const [isSelected, setIsSelected] = useState<Record<string, boolean>>({});
     const [editTask, setEditTask] = useState<string | null>(null);
     const [editValue, setEditValue] = useState<string>('');
-    // const [completedTasks, setCompletedTasks] = useState<Record<string, boolean>>({});
+    const [checkedTasksCount, setCheckedTasksCount] = useState<number>(0);
 
+    useEffect(() => {
+        setCompletedTasks(isChecked);
+    }, [isChecked])
+    const clearTasks = () => {
+        setTasks([]);
+    }
     const handleEdit = (task: string) => {
         console.log('double click')
         setEditTask(task);
@@ -31,7 +40,6 @@ const TaskList: React.FC<TaskListProps> = ({ tasks, setTasks, filter, completedT
     const handleCheck = (task: string) => {
         setIsChecked(prevState => {
             const newIsChecked = { ...prevState, [task]: !prevState[task] };
-            setCompletedTasks(prevTasks => ({ ...prevTasks, [task]: newIsChecked[task] }));
             return newIsChecked;
         });
     };
@@ -56,6 +64,13 @@ const TaskList: React.FC<TaskListProps> = ({ tasks, setTasks, filter, completedT
     } else if (filter === 'completed') {
         filteredTasks = tasks.filter(task => isChecked[task]);
     }
+    const deleteTask = (taskIndex: number) => {
+        if (isChecked[taskIndex]) {
+            setCheckedTasksCount(prevCount => prevCount - 1);
+        }
+        const newTasks = tasks.filter((_, index) => index !== taskIndex);
+        setTasks(newTasks);
+    };
     return (
         <>
             {
@@ -67,10 +82,14 @@ const TaskList: React.FC<TaskListProps> = ({ tasks, setTasks, filter, completedT
                             onClick={() => handleSelect(task)}
                             onBlur={() => handleDeselect(task)}
                             onDoubleClick={() => handleEdit(task)}
+                            data-testid="task-list"
                         >
 
                             <div className='flex items-center w-full' onDoubleClick={() => handleEdit(task)}>
-                                <div className='flex items-center ml-3' onClick={(event) => { event.stopPropagation(); handleCheck(task) }}>
+                                <div 
+                                className='flex items-center ml-3' 
+                                onClick={(event) => { event.stopPropagation(); handleCheck(task) }} 
+                                data-testid="task-checkbox">
                                     {
                                         isChecked[task] ?
                                             <ion-icon name="checkmark-circle-outline" style={{ fontSize: '30px', color: 'rgba(0, 128, 0, 0.5)' }}></ion-icon> :
@@ -97,11 +116,17 @@ const TaskList: React.FC<TaskListProps> = ({ tasks, setTasks, filter, completedT
                                     </div>
                                     : ''
                             };
-
                         </div>
                     )
                 })
             }
+                            <div className="bg-white w-full">
+                                {
+                                    tasks && tasks.length > 0 ?
+                                        <CardSettings filter={filter} setFilter={setFilter} checkedTasksCount={checkedTasksCount} clearTasks={clearTasks} tasks={tasks} />
+                                        : ''
+                                }
+                            </div>
         </>
     );
 }

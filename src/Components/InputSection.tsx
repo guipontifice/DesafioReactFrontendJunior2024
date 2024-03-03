@@ -1,29 +1,21 @@
 import { useState, useEffect } from "react"
 import React from 'react'
 import TaskList from "./TaskList";
-import CardSettings from "./CardSettings";
 
-function input() {
+function InputSection() {
     const [inputValue, setInputValue] = React.useState('' as string);
     const [task, setTask] = React.useState([] as string[]);
     const [filter, setFilter] = useState<'all' | 'active' | 'completed'>('all');
     const [completedTasks, setCompletedTasks] = useState<Record<string, boolean>>({});
 
-    console.log(filter)
     React.useEffect(() => {
-        console.log('Task:', task);
     }, [task]);
 
-    const clearTasks = () => {
-        console.log('check')
-        setTask([]);
-    }
+    
     const createTask = (e: React.FormEvent) => {
         e.preventDefault()
         if (!inputValue) return;
-        console.log(inputValue)
         setTask([...task, inputValue])
-        console.log('Task:', task)
         setInputValue('')
     };
     const handleInputChange = (e: React.ChangeEvent<HTMLInputElement>) => {
@@ -56,17 +48,11 @@ function input() {
                 <div className="md:w-full shadow-md">
                     {
                         task && task.length > 0 ?
-                            <TaskList tasks={task} setTasks={setTask} filter={filter} completedTasks={completedTasks} setCompletedTasks={setCompletedTasks} /> :
+                            <TaskList tasks={task} setTasks={setTask} filter={filter} setFilter={setFilter} completedTasks={completedTasks} setCompletedTasks={setCompletedTasks} /> :
                             ''
                     }
                 </div>
-                <div className="bg-white w-full">
-                    {
-                        task && task.length > 0 ?
-                            <CardSettings filter={filter} setFilter={setFilter} completedTasks={completedTasks} clearTasks={clearTasks} tasks={task} />
-                            : ''
-                    }
-                </div>
+                
             </div>
             <footer className="flex flex-col items-center text-gray text-xs">
                 <p className="mt-20">Double-click to edit a todo</p>
@@ -77,4 +63,4 @@ function input() {
     )
 }
 
-export default input
+export default InputSection

@@ -4,22 +4,25 @@ import { useState } from 'react';
 interface CardSettingsProps {
     filter: 'all' | 'active' | 'completed';
     setFilter: (filter: 'all' | 'active' | 'completed') => void;
-    completedTasks: Record<string, boolean>;
+    checkedTasksCount: number;
     clearTasks: () => void;
     tasks: string[];
 }
-const CardSettings: React.FC<CardSettingsProps> = ({ filter, setFilter, completedTasks, clearTasks, tasks }) => {
+const CardSettings: React.FC<CardSettingsProps> = ({ filter, setFilter, checkedTasksCount, clearTasks, tasks }) => {
+    console.log(checkedTasksCount)
+    // const checkedTasks = Object.values(checkedTasksCount).filter(Boolean).length;
     console.log('tasks.length', tasks.length);
-    console.log('completedTasks.length', completedTasks.length)
-    console.log('esse aqui', filter)
-    const completedTasksCount = Object.values(completedTasks).filter(Boolean).length;
-    const itemsLeft = tasks.filter(task => !completedTasks[task]).length
-    console.log('vamo ver se funcionou:', itemsLeft)
+    // console.log('checkedTasks', checkedTasks)
+    const itemsLeft = () => {
+        const itemsLeftCount = tasks.length - checkedTasksCount;
+        if (itemsLeftCount === 0) return '0 items left!'
+        return `${itemsLeftCount} item${itemsLeftCount === 1 ? '' : 's'} left!`
+    }
     return (
         <>
             <div className='flex flex-row items-center justify-between border border-light-gray h-12 text-sm'>
                 <span className='mt-1 mx-2'>
-                    {`${tasks.length - completedTasksCount} item${itemsLeft === 1 ? '' : 's'} left!`}
+                    {itemsLeft()}
                 </span>
                 <ul className='flex flex-row mx-2'>
                     <li className={`mt-1 mx-1 cursor-pointer hover:border hover:border-borderColor px-3 py-1 rounded  ${filter === 'all' ? 'border border-borderColor' : ''}`}
@@ -34,6 +37,7 @@ const CardSettings: React.FC<CardSettingsProps> = ({ filter, setFilter, complete
                     </li>
                     <li className={`mt-1 mx-1 cursor-pointer hover:border hover:border-borderColor px-3 py-1 rounded  ${filter === 'completed' ? 'border border-borderColor' : ''}`}
                         onClick={() => setFilter('completed')}
+                        data-testid='filter-select'
                     >
                         Completed
                     </li>
