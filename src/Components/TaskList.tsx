@@ -1,18 +1,19 @@
+import { count } from 'console';
 import React from 'react'
 import { useState } from 'react';
 interface TaskListProps {
     tasks: string[];
     setTasks: (tasks: string[]) => void;
     filter: 'all' | 'active' | 'completed';
+    completedTasks: Record<string, boolean>;
+    setCompletedTasks: React.Dispatch<React.SetStateAction<Record<string, boolean>>>;
 }
-const TaskList: React.FC<TaskListProps> = ({ tasks, setTasks, filter }) => {
+const TaskList: React.FC<TaskListProps> = ({ tasks, setTasks, filter, completedTasks, setCompletedTasks }) => {
     const [isChecked, setIsChecked] = useState<Record<string, boolean>>({});
     const [isSelected, setIsSelected] = useState<Record<string, boolean>>({});
-    const [tasksState, setTasksState] = useState<string[]>(tasks);
-    const [task, setTask] = useState<string[]>(tasks)
     const [editTask, setEditTask] = useState<string | null>(null);
     const [editValue, setEditValue] = useState<string>('');
-    const [completedTasks, setCompletedTasks] = useState<Record<string, boolean>>({});
+    // const [completedTasks, setCompletedTasks] = useState<Record<string, boolean>>({});
 
     const handleEdit = (task: string) => {
         console.log('double click')
@@ -28,11 +29,10 @@ const TaskList: React.FC<TaskListProps> = ({ tasks, setTasks, filter }) => {
         setEditValue('');
     }
     const handleCheck = (task: string) => {
-        console.log('checked')
         setIsChecked(prevState => {
-            const newIsChecked = { ...prevState, [task]: !prevState[task]};
-            setCompletedTasks(newIsChecked);
-            return newIsChecked
+            const newIsChecked = { ...prevState, [task]: !prevState[task] };
+            setCompletedTasks(prevTasks => ({ ...prevTasks, [task]: newIsChecked[task] }));
+            return newIsChecked;
         });
     };
     const handleSelect = (task: string) => {
@@ -50,7 +50,6 @@ const TaskList: React.FC<TaskListProps> = ({ tasks, setTasks, filter }) => {
         event.stopPropagation();
         setTasks(tasks.filter(item => item !== task));
     };
-
     let filteredTasks = tasks;
     if (filter === 'active') {
         filteredTasks = tasks.filter(task => !isChecked[task]);
@@ -98,6 +97,7 @@ const TaskList: React.FC<TaskListProps> = ({ tasks, setTasks, filter }) => {
                                     </div>
                                     : ''
                             };
+
                         </div>
                     )
                 })

@@ -9,6 +9,7 @@ function input() {
     const [filter, setFilter] = useState<'all' | 'active' | 'completed'>('all');
     const [completedTasks, setCompletedTasks] = useState<Record<string, boolean>>({});
 
+    console.log(filter)
     React.useEffect(() => {
         console.log('Task:', task);
     }, [task]);
@@ -31,6 +32,8 @@ function input() {
     interface TaskListProps {
         tasks: string[];
         setTasks: (tasks: string[]) => void;
+        completedTasks: Record<string, boolean>;
+        setCompletedTasks: React.Dispatch<React.SetStateAction<Record<string, boolean>>>;
     }
     return (
         <>
@@ -53,14 +56,14 @@ function input() {
                 <div className="md:w-full shadow-md">
                     {
                         task && task.length > 0 ?
-                            <TaskList tasks={task} setTasks={setTask} filter={filter} /> :
+                            <TaskList tasks={task} setTasks={setTask} filter={filter} completedTasks={completedTasks} setCompletedTasks={setCompletedTasks} /> :
                             ''
                     }
                 </div>
                 <div className="bg-white w-full">
                     {
                         task && task.length > 0 ?
-                            <CardSettings filter={filter} setFilter={setFilter} completedTasks={completedTasks} clearTasks={clearTasks} />
+                            <CardSettings filter={filter} setFilter={setFilter} completedTasks={completedTasks} clearTasks={clearTasks} tasks={task} />
                             : ''
                     }
                 </div>

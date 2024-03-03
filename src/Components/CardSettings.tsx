@@ -1,20 +1,25 @@
 import React from 'react'
 import { useState } from 'react';
 
-
 interface CardSettingsProps {
     filter: 'all' | 'active' | 'completed';
     setFilter: (filter: 'all' | 'active' | 'completed') => void;
     completedTasks: Record<string, boolean>;
     clearTasks: () => void;
+    tasks: string[];
 }
-const CardSettings: React.FC<CardSettingsProps> = ({ filter, setFilter, completedTasks, clearTasks }) => {
+const CardSettings: React.FC<CardSettingsProps> = ({ filter, setFilter, completedTasks, clearTasks, tasks }) => {
+    console.log('tasks.length', tasks.length);
+    console.log('completedTasks.length', completedTasks.length)
+    console.log('esse aqui', filter)
+    const completedTasksCount = Object.values(completedTasks).filter(Boolean).length;
+    const itemsLeft = tasks.filter(task => !completedTasks[task]).length
+    console.log('vamo ver se funcionou:', itemsLeft)
     return (
         <>
             <div className='flex flex-row items-center justify-between border border-light-gray h-12 text-sm'>
-
                 <span className='mt-1 mx-2'>
-                    {`${Object.values(!completedTasks).filter(isDone => !isDone).length} item left!`}
+                    {`${tasks.length - completedTasksCount} item${itemsLeft === 1 ? '' : 's'} left!`}
                 </span>
                 <ul className='flex flex-row mx-2'>
                     <li className={`mt-1 mx-1 cursor-pointer hover:border hover:border-borderColor px-3 py-1 rounded  ${filter === 'all' ? 'border border-borderColor' : ''}`}
