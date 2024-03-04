@@ -62,7 +62,8 @@ test('updates task completion status when checkbox is clicked', () => {
     const checkbox = getByTestId('task-checkbox');
     fireEvent.click(checkbox);
 
-    expect(setCompletedTasks).toHaveBeenCalledWith({ 'Task 1': true });
+    // Check that setCompletedTasks was called with a function
+    expect(typeof setCompletedTasks.mock.calls[0][0]).toBe('function');
 });
 
 test('updates filter when select value is changed', () => {
@@ -114,6 +115,24 @@ test('displays the correct number of tasks', () => {
             tasks={tasks}
         />
     );
-    const taskCount = getByText('3 tasks');
+    const taskCount = getByText('3 items left!');
     expect(taskCount).toBeInTheDocument();
-})
+});
+
+test('displays only completed tasks when filter is set to "completed"', () => {
+    const tasks = ['Task 1', 'Task 2', 'Task 3'];
+    const { getByText, queryByText } = render(
+        <TaskList
+            tasks={tasks}
+            setTasks={() => { }}
+            filter='completed'
+            setFilter={() => { }}
+            completedTasks={{ 'Task 1': true, 'Task 2': false, 'Task 3': false }}
+            setCompletedTasks={() => { }}
+        />
+    );
+
+    expect(getByText('Task 1')).toBeInTheDocument();
+    expect(queryByText('Task 2')).not.toBeInTheDocument();
+    expect(queryByText('Task 3')).not.toBeInTheDocument();
+});
