@@ -32,9 +32,17 @@ const TaskList: React.FC<TaskListProps> = ({ tasks, setTasks, filter, setFilter,
         setCheckedTasksCount(newCheckedTasksCount);
     }, [completedTasks]);
     const clearTasks = () => {
-        setTasks([]);
-        setCompletedTasks({})
-        setCheckedTasksCount(0);
+        const newTasks = tasks.filter(task => !completedTasks[task]);
+        const newCompletedTasks = Object.keys(completedTasks).reduce((acc, task) => {
+            if (!completedTasks[task]) {
+                acc[task] = false;
+            }
+            return acc;
+        }, {} as Record<string, boolean>);
+        setTasks(newTasks);
+        setCompletedTasks(newCompletedTasks);
+        const newCheckedTasksCount = Object.values(newCompletedTasks).filter(Boolean).length;
+        setCheckedTasksCount(newCheckedTasksCount);
     }
     const handleEdit = (task: string) => {
         console.log('double click')
@@ -80,18 +88,18 @@ const TaskList: React.FC<TaskListProps> = ({ tasks, setTasks, filter, setFilter,
     } else if (filter === 'completed') {
         filteredTasks = tasks.filter(task => completedTasks[task]);
     }
-    const deleteTask = (taskIndex: number) => {
-        const task = tasks[taskIndex];
-        if (completedTasks[task]) {
-            setCheckedTasksCount(prevCount => prevCount - 1);
-        }
-        const newTasks = tasks.filter((_, index) => index !== taskIndex);
-        setTasks(newTasks);
-        setCompletedTasks(prevState => {
-            const { [task]: removed, ...newCompletedTasks } = prevState;
-            return newCompletedTasks;
-        });
-    };
+    // const deleteTask = (taskIndex: number) => {
+    //     const task = tasks[taskIndex];
+    //     if (completedTasks[task]) {
+    //         setCheckedTasksCount(prevCount => prevCount - 1);
+    //     }
+    //     const newTasks = tasks.filter((_, index) => index !== taskIndex);
+    //     setTasks(newTasks);
+    //     setCompletedTasks(prevState => {
+    //         const { [task]: removed, ...newCompletedTasks } = prevState;
+    //         return newCompletedTasks;
+    //     });
+    // };
     return (
         <>
             {
