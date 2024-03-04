@@ -1,5 +1,6 @@
 import React from 'react'
 import { useState } from 'react';
+import { useNavigate } from 'react-router-dom';
 
 interface CardSettingsProps {
     filter: 'all' | 'active' | 'completed';
@@ -9,10 +10,8 @@ interface CardSettingsProps {
     tasks: string[];
 }
 const CardSettings: React.FC<CardSettingsProps> = ({ filter, setFilter, checkedTasksCount, clearTasks, tasks }) => {
-    console.log(checkedTasksCount)
-    // const checkedTasks = Object.values(checkedTasksCount).filter(Boolean).length;
-    console.log('tasks.length', tasks.length);
-    // console.log('checkedTasks', checkedTasks)
+const navigate = useNavigate();
+
     const itemsLeft = () => {
         const itemsLeftCount = tasks.length - checkedTasksCount;
         if (itemsLeftCount === 0) return '0 items left!'
@@ -20,29 +19,29 @@ const CardSettings: React.FC<CardSettingsProps> = ({ filter, setFilter, checkedT
     }
     return (
         <>
-            <div className='flex flex-row items-center justify-between border border-light-gray h-12 text-sm'>
+            <div className='flex flex-row items-center justify-between border border-light-gray-2 h-12 text-sm'>
                 <span className='mt-1 mx-2'>
                     {itemsLeft()}
                 </span>
                 <ul className='flex flex-row mx-2'>
                     <li className={`mt-1 mx-1 cursor-pointer hover:border hover:border-borderColor px-3 py-1 rounded  ${filter === 'all' ? 'border border-borderColor' : ''}`}
-                        onClick={() => setFilter('all')}
+                        onClick={() => navigate('/all')}
                     >
                         All
                     </li>
-                    <li className={`mt-1 mx-1 cursor-pointer hover:border hover:border-bborderColor px-3 py-1 rounded  ${filter === 'active' ? 'border border-borderColor' : ''}`}
-                        onClick={() => setFilter('active')}
+                    <li className={`mt-1 mx-1 cursor-pointer hover:border hover:border-borderColor px-3 py-1 rounded  ${filter === 'active' ? 'border border-borderColor' : ''}`}
+                        onClick={() => navigate('/active')}
                     >
                         Active
                     </li>
                     <li className={`mt-1 mx-1 cursor-pointer hover:border hover:border-borderColor px-3 py-1 rounded  ${filter === 'completed' ? 'border border-borderColor' : ''}`}
-                        onClick={() => setFilter('completed')}
+                        onClick={() => navigate('/completed')}
                         data-testid='filter-select'
                     >
                         Completed
                     </li>
                 </ul>
-                <span className='mt-1 mx-2 hover:underline cursor-pointer' onClick={clearTasks}>Clear Completed</span>
+                <span className='mt-1 mx-2 hover:underline cursor-pointer' onClick={() => { clearTasks(); navigate('/all') }}>Clear Completed</span>
             </div>
         </>
     )

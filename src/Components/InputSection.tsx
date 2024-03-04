@@ -44,7 +44,7 @@ function InputSection() {
     }
     return (
         <>
-            <div className={`bg-white items-center md:w-3/5 shadow-sm focus:within focus:border focus:outline-1 focus:outline-offset-2 focus:outline-focusInput`} tabIndex={0}>
+            <div className={`bg-white items-center md:w-3/5 shadow-sm focus:within focus:border focus:border-light-gray-2 focus:outline-1 focus:outline-offset-2 focus:outline-focusInput`} tabIndex={0}>
                 <form onSubmit={createTask} className={`${inputValue ? 'border-2 border-focusInput outline-2' : ''} `}>
                     <div className="flex items-center w-text-gray">
                         {task && task.length > 0 ? (

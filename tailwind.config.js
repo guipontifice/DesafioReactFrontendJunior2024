@@ -55,7 +55,8 @@ export default {
       "background": "#f5f5f5",
       "focusInput": "#cf7d7d",
       "borderColor": "#ce4646",
-      "light-gray": "#949494"
+      "light-gray": "#949494",
+      "light-gray-2": "#ededed",
     },
   },
 

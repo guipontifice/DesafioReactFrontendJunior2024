@@ -1,6 +1,7 @@
 import React, { useEffect } from 'react'
 import { useState } from 'react';
 import CardSettings from './CardSettings';
+import { useLocation } from 'react-router';
 
 interface TaskListProps {
     tasks: string[];
@@ -17,6 +18,14 @@ const TaskList: React.FC<TaskListProps> = ({ tasks, setTasks, filter, setFilter,
     const [editTask, setEditTask] = useState<string | null>(null);
     const [editValue, setEditValue] = useState<string>('');
     const [checkedTasksCount, setCheckedTasksCount] = useState<number>(0);
+    
+    const location = useLocation();
+    useEffect(() => {
+        const currentFilter = location.pathname.substring(1);
+        if (['all', 'active', 'completed'].includes(currentFilter)) {
+            setFilter(currentFilter as 'all' | 'active' | 'completed');
+        }
+    })
 
     useEffect(() => {
         const newCheckedTasksCount = Object.values(completedTasks).filter(Boolean).length;
@@ -90,14 +99,14 @@ const TaskList: React.FC<TaskListProps> = ({ tasks, setTasks, filter, setFilter,
                     return (
                         <div
                             key={index}
-                            className='flex flex-row bg-white h-16 items-center md:w-full shadow-md border-t border-light-gray'
+                            className='flex flex-row bg-white h-16 items-center md:w-full shadow-md border-t border-light-gray-2'
                             onClick={() => handleSelect(task)}
                             onBlur={() => handleDeselect(task)}
                             onDoubleClick={() => handleEdit(task)}
                             data-testid="task-list"
                         >
 
-                            <div className='flex items-center w-full' onDoubleClick={() => handleEdit(task)}>
+                            <div className='flex items-center w-full focus:border focus:border-light-gray-2' onDoubleClick={() => handleEdit(task)}>
                                 <div
                                     className='flex items-center ml-3'
                                     onClick={(event) => { event.stopPropagation(); handleCheck(task) }}
