@@ -76,9 +76,44 @@ test('updates filter when select value is changed', () => {
             tasks={[]}
         />
     );
-
     const filterSelect = getByTestId('filter-select');
-    fireEvent.select(filterSelect, { target: { value: 'completed' } });
+    console.log(filterSelect)
 
+    fireEvent.click(filterSelect, { target: { value: 'completed' } });
+
+    console.log(setFilter.mock.calls)
     expect(setFilter).toHaveBeenCalledWith('completed');
 });
+
+test('clears tasks when clear button is clicked', () => {
+    const clearTasks = jest.fn();
+    const { getByText } = render(
+        <CardSettings
+            filter='all'
+            setFilter={() => {}}
+            checkedTasksCount={0}
+            clearTasks={clearTasks}
+            tasks={[]}
+        />
+    );
+
+    const clearButton = getByText('Clear Completed');
+    fireEvent.click(clearButton);
+
+    expect(clearTasks).toHaveBeenCalled();
+});
+
+test('displays the correct number of tasks', () => {
+    const tasks = ['Task 1', 'Task 2', 'Task 3']
+    const { getByText } = render(
+        <CardSettings
+            filter='all'
+            setFilter={() => {}}
+            checkedTasksCount={0}
+            clearTasks={() => {}}
+            tasks={tasks}
+        />
+    );
+    const taskCount = getByText('3 tasks');
+    expect(taskCount).toBeInTheDocument();
+})

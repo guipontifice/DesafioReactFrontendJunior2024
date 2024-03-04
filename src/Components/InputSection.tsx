@@ -7,11 +7,12 @@ function InputSection() {
     const [task, setTask] = React.useState([] as string[]);
     const [filter, setFilter] = useState<'all' | 'active' | 'completed'>('all');
     const [completedTasks, setCompletedTasks] = useState<Record<string, boolean>>({});
+    const [allChecked, setAllChecked] = useState<boolean>(false);
 
     React.useEffect(() => {
     }, [task]);
 
-    
+
     const createTask = (e: React.FormEvent) => {
         e.preventDefault()
         if (!inputValue) return;
@@ -21,19 +22,33 @@ function InputSection() {
     const handleInputChange = (e: React.ChangeEvent<HTMLInputElement>) => {
         setInputValue(e.target.value)
     };
-    interface TaskListProps {
-        tasks: string[];
-        setTasks: (tasks: string[]) => void;
-        completedTasks: Record<string, boolean>;
-        setCompletedTasks: React.Dispatch<React.SetStateAction<Record<string, boolean>>>;
+    // interface TaskListProps {
+    //     tasks: string[];
+    //     setTasks: (tasks: string[]) => void;
+    //     completedTasks: Record<string, boolean>;
+    //     setCompletedTasks: React.Dispatch<React.SetStateAction<Record<string, boolean>>>;
+    // }
+
+    useEffect(() => {
+        if (allChecked) {
+            const allTasks = task.reduce((acc, task) => {
+                acc[task] = true;
+                return acc;
+            }, {} as Record<string, boolean>);
+            setCompletedTasks(allTasks);
+            setAllChecked(false);
+        }
+    }, [allChecked, task]);
+    const checkAllTasks = () => {
+        setAllChecked(true);
     }
     return (
         <>
-            <div className={`bg-white items-center md:w-3/5 shadow-md focus:within focus:border focus:outline-1 focus:outline-offset-2 focus:outline-focusInput`} tabIndex={0}>
+            <div className={`bg-white items-center md:w-3/5 shadow-sm focus:within focus:border focus:outline-1 focus:outline-offset-2 focus:outline-focusInput`} tabIndex={0}>
                 <form onSubmit={createTask} className={`${inputValue ? 'border-2 border-focusInput outline-2' : ''} `}>
                     <div className="flex items-center w-text-gray">
                         {task && task.length > 0 ? (
-                            <label className="ml-3 align-middle w-10 items-center">
+                            <label className="ml-3 align-middle w-10 items-center" onClick={checkAllTasks}>
                                 <ion-icon name="chevron-down-outline"></ion-icon>
                             </label>
                         ) : ''}
@@ -52,7 +67,7 @@ function InputSection() {
                             ''
                     }
                 </div>
-                
+
             </div>
             <footer className="flex flex-col items-center text-gray text-xs">
                 <p className="mt-20">Double-click to edit a todo</p>

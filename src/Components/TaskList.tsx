@@ -19,10 +19,13 @@ const TaskList: React.FC<TaskListProps> = ({ tasks, setTasks, filter, setFilter,
     const [checkedTasksCount, setCheckedTasksCount] = useState<number>(0);
 
     useEffect(() => {
-        setCompletedTasks(isChecked);
-    }, [isChecked])
+        const newCheckedTasksCount = Object.values(completedTasks).filter(Boolean).length;
+        setCheckedTasksCount(newCheckedTasksCount);
+    }, [completedTasks]);
     const clearTasks = () => {
         setTasks([]);
+        setCompletedTasks({})
+        setCheckedTasksCount(0);
     }
     const handleEdit = (task: string) => {
         console.log('double click')
@@ -38,9 +41,9 @@ const TaskList: React.FC<TaskListProps> = ({ tasks, setTasks, filter, setFilter,
         setEditValue('');
     }
     const handleCheck = (task: string) => {
-        setIsChecked(prevState => {
-            const newIsChecked = { ...prevState, [task]: !prevState[task] };
-            return newIsChecked;
+        setCompletedTasks(prevState => {
+            const newCompletedTasks = { ...prevState, [task]: !prevState[task] };
+            return newCompletedTasks;
         });
     };
     const handleSelect = (task: string) => {
@@ -54,22 +57,31 @@ const TaskList: React.FC<TaskListProps> = ({ tasks, setTasks, filter, setFilter,
     };
 
     const handleRemove = (event: React.MouseEvent, task: string) => {
-        console.log(task)
         event.stopPropagation();
-        setTasks(tasks.filter(item => item !== task));
+        const newTasks = tasks.filter(item => item !== task);
+        setTasks(newTasks);
+        setCompletedTasks(prevState => {
+            const { [task]: removed, ...newCompletedTasks } = prevState;
+            return newCompletedTasks;
+        });
     };
     let filteredTasks = tasks;
     if (filter === 'active') {
-        filteredTasks = tasks.filter(task => !isChecked[task]);
+        filteredTasks = tasks.filter(task => !completedTasks[task]);
     } else if (filter === 'completed') {
-        filteredTasks = tasks.filter(task => isChecked[task]);
+        filteredTasks = tasks.filter(task => completedTasks[task]);
     }
     const deleteTask = (taskIndex: number) => {
-        if (isChecked[taskIndex]) {
+        const task = tasks[taskIndex];
+        if (completedTasks[task]) {
             setCheckedTasksCount(prevCount => prevCount - 1);
         }
         const newTasks = tasks.filter((_, index) => index !== taskIndex);
         setTasks(newTasks);
+        setCompletedTasks(prevState => {
+            const { [task]: removed, ...newCompletedTasks } = prevState;
+            return newCompletedTasks;
+        });
     };
     return (
         <>
@@ -86,17 +98,17 @@ const TaskList: React.FC<TaskListProps> = ({ tasks, setTasks, filter, setFilter,
                         >
 
                             <div className='flex items-center w-full' onDoubleClick={() => handleEdit(task)}>
-                                <div 
-                                className='flex items-center ml-3' 
-                                onClick={(event) => { event.stopPropagation(); handleCheck(task) }} 
-                                data-testid="task-checkbox">
+                                <div
+                                    className='flex items-center ml-3'
+                                    onClick={(event) => { event.stopPropagation(); handleCheck(task) }}
+                                    data-testid="task-checkbox">
                                     {
-                                        isChecked[task] ?
+                                        completedTasks[task] ?
                                             <ion-icon name="checkmark-circle-outline" style={{ fontSize: '30px', color: 'rgba(0, 128, 0, 0.5)' }}></ion-icon> :
                                             <ion-icon name="ellipse-outline" style={{ fontSize: '30px', color: 'rgba(0, 0, 0, 0.5)' }}></ion-icon>
                                     }
                                 </div>
-                                <div className={`${isChecked[task] ? 'line-through text-light-gray' : ''} ml-7 text-2xl text-gray`}>
+                                <div className={`${completedTasks[task] ? 'line-through text-light-gray' : ''} ml-7 text-2xl text-gray`}>
                                     {
                                         editTask === task ?
                                             <input
@@ -110,7 +122,7 @@ const TaskList: React.FC<TaskListProps> = ({ tasks, setTasks, filter, setFilter,
                                 </div>
                             </div>
                             {
-                                isChecked[task] ?
+                                completedTasks[task] ?
                                     <div className='flex justify-end mr-6' onClick={(event) => handleRemove(event, task)}>
                                         <ion-icon name="close-outline" style={{ fontSize: '25px', color: 'rgba(0, 0, 0, 0.5)' }}></ion-icon>
                                     </div>
@@ -120,13 +132,13 @@ const TaskList: React.FC<TaskListProps> = ({ tasks, setTasks, filter, setFilter,
                     )
                 })
             }
-                            <div className="bg-white w-full">
-                                {
-                                    tasks && tasks.length > 0 ?
-                                        <CardSettings filter={filter} setFilter={setFilter} checkedTasksCount={checkedTasksCount} clearTasks={clearTasks} tasks={tasks} />
-                                        : ''
-                                }
-                            </div>
+            <div className="bg-white w-full">
+                {
+                    tasks && tasks.length > 0 ?
+                        <CardSettings filter={filter} setFilter={setFilter} checkedTasksCount={checkedTasksCount} clearTasks={clearTasks} tasks={tasks} />
+                        : ''
+                }
+            </div>
         </>
     );
 }

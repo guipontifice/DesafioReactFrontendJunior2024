@@ -44,10 +44,6 @@ const CardSettings: React.FC<CardSettingsProps> = ({ filter, setFilter, checkedT
                 </ul>
                 <span className='mt-1 mx-2 hover:underline cursor-pointer' onClick={clearTasks}>Clear Completed</span>
             </div>
-            <div className='flex flex-col justify-center items-center h-full'>
-                <div className='custom-footer-ul_line1 h-1 bg-white border border-slate-200'></div>
-                <div className='custom-footer-ul_line2 h-1 bg-white border border-slate-200'></div>
-            </div>
         </>
     )
 }
