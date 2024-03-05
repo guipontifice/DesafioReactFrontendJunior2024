@@ -100,8 +100,8 @@ test('clears tasks when clear button is clicked', () => {
         <MemoryRouter>
             <CardSettings
                 filter='all'
-                setFilter={() => { }}
-                checkedTasksCount={0}
+                setFilter={() => {'all'}}
+                checkedTasksCount={5}
                 clearTasks={clearTasks}
                 tasks={[]}
             />
